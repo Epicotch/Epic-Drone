@@ -181,6 +181,7 @@
         0.0,
         0.8,
         1.0,
+        1.8,
         2.2
       ],
       "tuning_pattern_settings": {
@@ -604,7 +605,7 @@
       "Root"
     ],
     [
-      "49eda0ae-4781-4973-af68-579f6473e796",
+      "16dcc317-e46f-499b-a197-f5dad5b67eea",
       "Motor controller2"
     ],
     [
@@ -612,11 +613,11 @@
       "Motor controller1"
     ],
     [
-      "ae55a9cc-b354-4e73-9cd4-3af85f6160fb",
+      "4e12ae57-28fd-476d-80e9-a67602b80c29",
       "Motor controller3"
     ],
     [
-      "42a437b2-5218-41c7-b08d-d88eb59e5093",
+      "a17fe027-c30e-43b9-bb88-697708858ab4",
       "Motor controller4"
     ]
   ],

@@ -67,6 +67,45 @@
 			)
 		)
 	)
+	(fp_text user "A"
+		(at -8.292857 11.5 0)
+		(unlocked yes)
+		(layer "F.SilkS")
+		(uuid "5bd3e1c2-975e-4e36-a66e-c5b8bae57f94")
+		(effects
+			(font
+				(size 1.5 1.5)
+				(thickness 0.2)
+			)
+			(justify left bottom)
+		)
+	)
+	(fp_text user "B"
+		(at -0.9 11.5 0)
+		(unlocked yes)
+		(layer "F.SilkS")
+		(uuid "84949005-6192-4e63-99e3-3e7e78674054")
+		(effects
+			(font
+				(size 1.5 1.5)
+				(thickness 0.2)
+			)
+			(justify left bottom)
+		)
+	)
+	(fp_text user "C"
+		(at 6.6 11.5 0)
+		(unlocked yes)
+		(layer "F.SilkS")
+		(uuid "c695b4d5-2846-4eb3-ae1c-8c70f3a3ea8a")
+		(effects
+			(font
+				(size 1.5 1.5)
+				(thickness 0.2)
+			)
+			(justify left bottom)
+		)
+	)
 	(fp_text user "${REFERENCE}"
 		(at 0 2.5 0)
 		(unlocked yes)
@@ -80,13 +119,13 @@
 		)
 	)
 	(pad "1" thru_hole rect
-		(at -7.5 4.5)
+		(at 7.5 4.5)
 		(size 5 9)
 		(drill 3)
 		(property pad_prop_castellated)
 		(layers "*.Cu" "*.Mask")
 		(remove_unused_layers no)
-		(uuid "c94430c1-fec5-456a-97f8-d9b0ede56fdc")
+		(uuid "fee3863d-d81c-4463-97d7-4d2b27363347")
 	)
 	(pad "2" thru_hole rect
 		(at 0 4.5)
@@ -98,12 +137,12 @@
 		(uuid "580365ef-8ed4-423b-bc3c-f699b54cea34")
 	)
 	(pad "3" thru_hole rect
-		(at 7.5 4.5)
+		(at -7.5 4.5)
 		(size 5 9)
 		(drill 3)
 		(property pad_prop_castellated)
 		(layers "*.Cu" "*.Mask")
 		(remove_unused_layers no)
-		(uuid "fee3863d-d81c-4463-97d7-4d2b27363347")
+		(uuid "c94430c1-fec5-456a-97f8-d9b0ede56fdc")
 	)
 )
