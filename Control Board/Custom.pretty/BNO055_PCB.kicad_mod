@@ -1,0 +1,208 @@
+(footprint "BNO055_PCB"
+	(version 20240108)
+	(generator "pcbnew")
+	(generator_version "8.0")
+	(layer "F.Cu")
+	(property "Reference" "REF**"
+		(at 0 -0.5 0)
+		(unlocked yes)
+		(layer "F.SilkS")
+		(uuid "474515a3-591e-40c7-9130-202ab81a3339")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.1)
+			)
+		)
+	)
+	(property "Value" "BNO055_PCB"
+		(at 0 1 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(uuid "afedffb5-642f-43df-9285-3e22e6c6a9c3")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Footprint" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "ed9b15b6-ad2f-4776-85de-8f41d2e1445d")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "50645830-15a6-4c10-8591-6a330b586199")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "8b7c3681-a447-467c-a8b4-52e9c8f17858")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr through_hole)
+	(fp_rect
+		(start -1.2 -1.57)
+		(end 13.8 24.43)
+		(stroke
+			(width 0.15)
+			(type default)
+		)
+		(fill none)
+		(layer "F.SilkS")
+		(uuid "cbe83a6a-bc17-4a51-9977-3fb2721f7567")
+	)
+	(fp_text user "X+"
+		(at 5.079762 -2.3 0)
+		(unlocked yes)
+		(layer "F.SilkS")
+		(uuid "4362b083-7696-47e6-bb5b-34b098549561")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+			(justify left bottom)
+		)
+	)
+	(fp_text user "Y+"
+		(at -3.7 12.03175 0)
+		(unlocked yes)
+		(layer "F.SilkS")
+		(uuid "8e2f455c-38a8-4e38-b355-30d7994ec3fa")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+			(justify left bottom)
+		)
+	)
+	(fp_text user "${REFERENCE}"
+		(at 0 2.5 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(uuid "e69e08bb-ec9d-4e2b-b171-15f6907e9ddd")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(pad "1" thru_hole oval
+		(at 0 0)
+		(size 1.7 1.7)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "d2bd3e33-b897-437c-b716-0b7a2422768f")
+	)
+	(pad "2" thru_hole oval
+		(at 0 2.54)
+		(size 1.7 1.7)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "faa0d9a6-43d8-4cf0-94c3-f2d54ef00e58")
+	)
+	(pad "3" thru_hole oval
+		(at 0 5.08)
+		(size 1.7 1.7)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "0451625c-a421-483c-b8e5-0a2a403a43d3")
+	)
+	(pad "4" thru_hole oval
+		(at 0 7.62)
+		(size 1.7 1.7)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "54599de8-5f4f-4c34-a4a9-80c4a157d716")
+	)
+	(pad "5" thru_hole oval
+		(at 0 10.16)
+		(size 1.7 1.7)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "0ed0d994-4f3a-43a9-9e2a-0a18c6a17703")
+	)
+	(pad "6" thru_hole oval
+		(at 0 12.7)
+		(size 1.7 1.7)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "6a769bd1-8447-48e5-aa3f-f887f4e389eb")
+	)
+	(pad "7" thru_hole oval
+		(at 0 15.24)
+		(size 1.7 1.7)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "748589c8-3e56-490c-8772-52032500f20b")
+	)
+	(pad "8" thru_hole oval
+		(at 0 17.78)
+		(size 1.7 1.7)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "8b37e1a9-df43-4c7a-8e3e-a4617f52111a")
+	)
+	(pad "9" thru_hole oval
+		(at 0 20.32)
+		(size 1.7 1.7)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "0f9d037a-fd06-4fb1-863f-afd0f5f4a9e6")
+	)
+	(pad "10" thru_hole oval
+		(at 0 22.86)
+		(size 1.7 1.7)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "f89d114b-8709-401e-8080-dd811cffee0f")
+	)
+	(group ""
+		(uuid "3257b9f1-98f7-4223-a00c-8783445bb85b")
+		(members "0451625c-a421-483c-b8e5-0a2a403a43d3" "0ed0d994-4f3a-43a9-9e2a-0a18c6a17703"
+			"0f9d037a-fd06-4fb1-863f-afd0f5f4a9e6" "54599de8-5f4f-4c34-a4a9-80c4a157d716"
+			"6a769bd1-8447-48e5-aa3f-f887f4e389eb" "748589c8-3e56-490c-8772-52032500f20b"
+			"8b37e1a9-df43-4c7a-8e3e-a4617f52111a" "d2bd3e33-b897-437c-b716-0b7a2422768f"
+			"f89d114b-8709-401e-8080-dd811cffee0f" "faa0d9a6-43d8-4cf0-94c3-f2d54ef00e58"
+		)
+	)
+)
