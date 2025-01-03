@@ -1,22 +1,21 @@
-/*
-
-MCF8329A Motor Controller IC I2C Driver
-
-Author: Bernard Jin (bljin@mit.edu)
-Created: 1 January 2025
-
-*/
+/**
+ * 
+ * MCF8329A Motor Controller IC I2C Driver
+ * Author: Bernard Jin (bljin@mit.edu)
+ * Created: 1 January 2025
+ * 
+ */
 
 #include <stdint.h>
 
 #ifndef MCF8329A
 #define MCF8329A
 
-/*
-
-defines
-
-*/
+/**
+ * 
+ * defines
+ * 
+ */
 
 #define MCF8329A_I2C_ADDR           0x01
 #define MCF8329A_READ_WRITE_ADDR    0x0000EA
@@ -25,12 +24,12 @@ defines
 #define MCF8329A_SHADOW_MEM_SEC     0x00
 #define MCF8329A_SHADOW_MEM_PAGE    0x00
 
-/*
-
-EEPROM shadow register addresses (p. 81)
-note: when actually sending these, we only use the lowest 12 bits.
-
-*/
+/**
+ * 
+ * EEPROM shadow register addresses (p. 81)
+ * note: when actually sending these, we only use the lowest 12 bits.
+ * 
+ */
 
 #define MCF8329A_REG_ISD_CONFIG         0x000080
 #define MCF8329A_REG_REV_DRIVE_CONFIG   0x000082
@@ -57,11 +56,11 @@ note: when actually sending these, we only use the lowest 12 bits.
 #define MCF8329A_REG_GD_CONFIG1         0x0000AC
 #define MCF8329A_REG_GD_CONFIG2         0x0000AE
 
-/* 
-
-function stuff 
-
-*/
+/**
+ * 
+ * function stuff
+ * 
+ */
 
 struct MCF8329A_CONTROL_WORD {
     bool RW;
@@ -73,7 +72,7 @@ struct MCF8329A_CONTROL_WORD {
 } ;
 
 struct MCF8329A_PACKET {
-    uint8_t controlWord[3];
+    uint8_t controlWord[4];
     uint8_t data[4];
 };
 
@@ -82,18 +81,19 @@ int assembleControlWord(MCF8329A_PACKET *, MCF8329A_CONTROL_WORD);
 int assembleControlWord(MCF8329A_PACKET packet, MCF8329A_CONTROL_WORD word) {
     uint8_t out[3] = {0x00, 0x00, 0x00};
     if (word.RW) {
-        out[0] = out[0] | 0x01 << 7;
+        out[1] = out[0] | 0x01 << 7;
     }
     if (word.CRC_EN) {
-        out[0] = out[0] | 0x01 << 6;
+        out[1] = out[0] | 0x01 << 6;
     }
     out[0] = out[0] | word.DLEN << 4 | word.MEM_SEC;
     out[1] = word.MEM_SEC << 4 | (word.MEM_ADDR & 0xF00) >> 8;
     out[2] = word.MEM_ADDR & 0xFF;
 
-    packet.controlWord[0] = out[0];
-    packet.controlWord[1] = out[1];
-    packet.controlWord[2] = out[2];
+    packet.controlWord[0] = MCF8329A_I2C_ADDR << 1;
+    packet.controlWord[1] = out[0];
+    packet.controlWord[2] = out[1];
+    packet.controlWord[3] = out[2];
 
     return 0;
 }
