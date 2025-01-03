@@ -27,6 +27,8 @@
 /*
 TODO:
 
+NOTE: RESET PIN IS ACTIVE LOW, YOU DOOF! MAKE SURE TO FIX THAT WHEN ACTUALLY SOLDERING UP THE BOARD YA EEJIT
+
 To write:
 - Motor driver config stuff
 - Motor startup script
@@ -57,6 +59,8 @@ int motor4PWM = 0;
 float kP; 
 float kI; 
 float kD;
+
+void driverSelect(uint8_t);
 
 void setup() {
 
@@ -128,10 +132,17 @@ void setup() {
     pinMode(NFAULT_3, INPUT);
     pinMode(NFAULT_4, INPUT);
 
-
-    // Configure 
 }
 
 void loop() {
     
+}
+
+void driverSelect(uint8_t i) {
+    /**
+     * Note: i = 0 corresponds to driver 1.
+     */
+    Wire.beginTransmission(0x70);
+    Wire.write(1 << i);
+    Wire.endTransmission();
 }
