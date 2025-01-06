@@ -87,9 +87,18 @@ float maxRoll;
 float maxPitch;
 float maxYawRate;
 
+double gpsDelta[3];
+double gpsZero[3];
+double gpsPos[3];
+double imuDelta[3];
+double pos[3];
+double heading[3];
+
 BNO08x imu;
+TinyGPSPlus gps;
 
 void driverSelect(uint8_t);
+void getPos(float*, float*);
 
 void setup() {
 
@@ -100,7 +109,7 @@ void setup() {
     Serial.println("Booting up!");
 
     // Initialize radio stuff
-    Serial7.begin(9600);
+    Serial7.begin(57600);
     while(!Serial7) delay(10);
 
     Serial7.println("hello");
@@ -109,7 +118,17 @@ void setup() {
     pinMode(RSSI, INPUT);
 
     // Initialize GPS serial
-    Serial1.begin(9600);
+    Serial1.begin(57600); // TODO: Configure the GPS to use higher baud rates and refresh rates.
+
+    while (Serial1.available() == 0) ;
+    while (Serial1.available() > 0) {
+        gps.encode(Serial1.read());
+    }
+
+    // Get GPS zeroes
+    gpsZero[0] = gps.location.lat();
+    gpsZero[1] = gps.location.lng();
+    gpsZero[2] = gps.altitude.meters();
 
     // Initialize motor driver I2C
     Wire.setSCL(19);
@@ -178,6 +197,40 @@ void loop() {
     else {
         // stuff to do while we're paused
     }
+}
+
+// Grab da position, possibly using extended Kalman filter.
+void updatePos(double* pos, double* heading) {
+
+    // grab GPS stuff
+    bool valid = false;
+    double gpsHeading;
+    while (Serial1.available() > 0) {
+        if(gps.encode(Serial1.read())) {
+            valid = true;
+        }
+    }
+    if (valid) {
+        gpsPos[0] = gps.location.lat();
+        gpsPos[1] = gps.location.lng();
+        gpsPos[2] = gps.altitude.meters();
+        
+        double avgLat = (gpsPos[0] + gpsZero[0]) / 2.0f;
+
+        // TODO: Possibly use integrated versions?
+        double mPerDegLat = 111132.92 - (559.82 * cos(2 * avgLat)) + (1.175 * cos(4 * avgLat)) - (0.0023 * cos(6 * avgLat));
+        double mPerDegLong = (111412.84 * cos(2 * avgLat)) - (93.5 * cos(3 * avgLat)) + (0.118 * cos(5*avgLat));
+    
+        gpsDelta[0] = (gpsPos[0] - gpsZero[0]) * mPerDegLat;
+        gpsDelta[1] = (gpsPos[1] - gpsZero[1]) * mPerDegLat;
+        gpsDelta[2] = gpsPos[2] - gpsZero[2];
+
+        gpsHeading = gps.course.deg();
+    }
+
+    
+
+
 }
 
 // Helper functions
