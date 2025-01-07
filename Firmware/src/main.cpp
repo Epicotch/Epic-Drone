@@ -12,6 +12,7 @@
 #include <SD.h>
 #include <MCF8329A.h>
 #include <SparkFun_BNO08x_Arduino_Library.h>
+#include <TeensyThreads.h>
 #include <pins.h>
 #include <TinyGPS++.h>
 #include <Wire.h>
@@ -41,7 +42,7 @@ To write:
 - Sensor fusion
 - PID
 - Motor control
-- Translational and rotational control (possibly follower-esque?)
+- Translational and rotational control (possibly follower-esque? pure pursuit?)
 - State machines!
     - Flight modes
 - Return to home
@@ -87,12 +88,14 @@ float maxRoll;
 float maxPitch;
 float maxYawRate;
 
-double gpsDelta[3];
-double gpsZero[3];
-double gpsPos[3];
-double imuDelta[3];
-double pos[3];
-double heading[3];
+float gpsZero[3];
+volatile float gpsDelta[3];
+volatile float gpsPos[3];
+volatile float imuDelta[3];
+volatile float imuHeading[3];
+volatile float imuAccel[3];
+float pos[3];
+float heading[3];
 
 BNO08x imu;
 TinyGPSPlus gps;
@@ -130,7 +133,7 @@ void setup() {
     gpsZero[1] = gps.location.lng();
     gpsZero[2] = gps.altitude.meters();
 
-    // Initialize motor driver I2C
+    // Initialize I2C 0
     Wire.setSCL(19);
     Wire.setSDA(18);
     Wire.setClock(100000);
@@ -142,6 +145,15 @@ void setup() {
         Serial.println("Oops! Could not find IMU.");
         while (1) ;
     }
+    if (!imu.enableAccelerometer()) {
+        Serial.println("Oops! Could not initialize accelerometer.");
+        while (1) ;
+    }
+    if (!imu.enableRotationVector()) {
+        Serial.println("Oops! Could not initialize gyroscope/magnetometer.");
+        while (1) ;
+    }
+
     Serial.println("IMU initialized");
 
     // Initialize I2C 1
@@ -228,9 +240,24 @@ void updatePos(double* pos, double* heading) {
         gpsHeading = gps.course.deg();
     }
 
-    
+}
 
-
+// Updates IMU based on whatever's coming in
+void updateIMU() {
+    if (imu.getSensorEvent()) {
+        switch (imu.getSensorEventID()) {
+            case SENSOR_REPORTID_LINEAR_ACCELERATION:
+                imuAccel[0] = imu.getLinAccelX(); // m/s^2
+                imuAccel[1] = imu.getLinAccelY();
+                imuAccel[2] = imu.getLinAccelZ();
+                break;
+            case SENSOR_REPORTID_ROTATION_VECTOR:
+                imuHeading[0] = imu.getRoll() * 180.0 / PI;
+                imuHeading[1] = imu.getPitch() * 180.0 / PI;
+                imuHeading[2] = imu.getYaw() * 180.0 / PI;
+                break;
+        }
+    }
 }
 
 // Helper functions
