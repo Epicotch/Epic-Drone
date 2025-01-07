@@ -156,6 +156,10 @@ void setup() {
 
     Serial.println("IMU initialized");
 
+    threads.addThread(updateSensors);
+
+    Serial.println("Sensor thread started");
+
     // Initialize I2C 1
     Wire1.setSCL(16);
     Wire1.setSDA(17);
@@ -211,51 +215,56 @@ void loop() {
     }
 }
 
-// Grab da position, possibly using extended Kalman filter.
+// Use extended Kalman filter to update our estimated position and heading.
 void updatePos(double* pos, double* heading) {
-
-    // grab GPS stuff
-    bool valid = false;
-    double gpsHeading;
-    while (Serial1.available() > 0) {
-        if(gps.encode(Serial1.read())) {
-            valid = true;
-        }
-    }
-    if (valid) {
-        gpsPos[0] = gps.location.lat();
-        gpsPos[1] = gps.location.lng();
-        gpsPos[2] = gps.altitude.meters();
-        
-        double avgLat = (gpsPos[0] + gpsZero[0]) / 2.0f;
-
-        // TODO: Possibly use integrated versions?
-        double mPerDegLat = 111132.92 - (559.82 * cos(2 * avgLat)) + (1.175 * cos(4 * avgLat)) - (0.0023 * cos(6 * avgLat));
-        double mPerDegLong = (111412.84 * cos(2 * avgLat)) - (93.5 * cos(3 * avgLat)) + (0.118 * cos(5*avgLat));
-    
-        gpsDelta[0] = (gpsPos[0] - gpsZero[0]) * mPerDegLat;
-        gpsDelta[1] = (gpsPos[1] - gpsZero[1]) * mPerDegLat;
-        gpsDelta[2] = gpsPos[2] - gpsZero[2];
-
-        gpsHeading = gps.course.deg();
-    }
 
 }
 
-// Updates IMU based on whatever's coming in
-void updateIMU() {
-    if (imu.getSensorEvent()) {
-        switch (imu.getSensorEventID()) {
-            case SENSOR_REPORTID_LINEAR_ACCELERATION:
-                imuAccel[0] = imu.getLinAccelX(); // m/s^2
-                imuAccel[1] = imu.getLinAccelY();
-                imuAccel[2] = imu.getLinAccelZ();
-                break;
-            case SENSOR_REPORTID_ROTATION_VECTOR:
-                imuHeading[0] = imu.getRoll() * 180.0 / PI;
-                imuHeading[1] = imu.getPitch() * 180.0 / PI;
-                imuHeading[2] = imu.getYaw() * 180.0 / PI;
-                break;
+// Updates position sensors based on whatever's coming in
+// TODO: ADD BAROMETER SUPPORT
+void updateSensors() {
+    while (1) {
+        // TODO: Possibly update IMU to use absolute positioning if need be?
+        if (imu.getSensorEvent()) {
+            switch (imu.getSensorEventID()) {
+                case SENSOR_REPORTID_LINEAR_ACCELERATION:
+                    imuAccel[0] = imu.getLinAccelX(); // m/s^2
+                    imuAccel[1] = imu.getLinAccelY();
+                    imuAccel[2] = imu.getLinAccelZ();
+                    break;
+                case SENSOR_REPORTID_ROTATION_VECTOR:
+                    imuHeading[0] = imu.getRoll() * 180.0 / PI;
+                    imuHeading[1] = imu.getPitch() * 180.0 / PI;
+                    imuHeading[2] = imu.getYaw() * 180.0 / PI;
+                    break;
+            }
+            // TODO: Dot each absolute axis with the lin accels
+        }
+
+        // grab GPS stuff
+        bool valid = false;
+        double gpsHeading;
+        while (Serial1.available() > 0) {
+            if(gps.encode(Serial1.read())) {
+                valid = true;
+            }
+        }
+        if (valid) {
+            gpsPos[0] = gps.location.lat();
+            gpsPos[1] = gps.location.lng();
+            gpsPos[2] = gps.altitude.meters();
+
+            double avgLat = (gpsPos[0] + gpsZero[0]) / 2.0f;
+
+            // TODO: Possibly use integrated versions?
+            double mPerDegLat = 111132.92 - (559.82 * cos(2 * avgLat)) + (1.175 * cos(4 * avgLat)) - (0.0023 * cos(6 * avgLat));
+            double mPerDegLong = (111412.84 * cos(2 * avgLat)) - (93.5 * cos(3 * avgLat)) + (0.118 * cos(5*avgLat));
+
+            gpsDelta[0] = (gpsPos[0] - gpsZero[0]) * mPerDegLat;
+            gpsDelta[1] = (gpsPos[1] - gpsZero[1]) * mPerDegLat;
+            gpsDelta[2] = gpsPos[2] - gpsZero[2];
+
+            gpsHeading = gps.course.deg();
         }
     }
 }
