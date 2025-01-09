@@ -89,19 +89,16 @@ float maxPitch;
 float maxYawRate;
 
 float gpsZero[3];
-volatile float gpsDelta[3];
-volatile float gpsPos[3];
-volatile float imuDelta[3];
-volatile float imuHeading[3];
-volatile float imuAccel[3];
-float pos[3];
-float heading[3];
+volatile float pos[3];
+volatile float heading[3];
 
 BNO08x imu;
 TinyGPSPlus gps;
 
 void driverSelect(uint8_t);
 void getPos(float*, float*);
+float latToM(float, float);
+float lngToM(float, float, float);
 
 void setup() {
 
@@ -123,6 +120,8 @@ void setup() {
     // Initialize GPS serial
     Serial1.begin(57600); // TODO: Configure the GPS to use higher baud rates and refresh rates.
 
+    delay(5000); // allow GPS module to get locks and calibrate itself a bit
+
     while (Serial1.available() == 0) ;
     while (Serial1.available() > 0) {
         gps.encode(Serial1.read());
@@ -132,6 +131,8 @@ void setup() {
     gpsZero[0] = gps.location.lat();
     gpsZero[1] = gps.location.lng();
     gpsZero[2] = gps.altitude.meters();
+
+    Serial.println("GPS Initialized");
 
     // Initialize I2C 0
     Wire.setSCL(19);
@@ -156,6 +157,7 @@ void setup() {
 
     Serial.println("IMU initialized");
 
+    prevTime = micros();
     threads.addThread(updateSensors);
 
     Serial.println("Sensor thread started");
@@ -223,22 +225,69 @@ void updatePos(double* pos, double* heading) {
 // Updates position sensors based on whatever's coming in
 // TODO: ADD BAROMETER SUPPORT
 void updateSensors() {
+    float gpsDelta[3] = {0, 0, 0};
+    float gpsPos[3] = {gpsZero[0], gpsZero[1], gpsZero[2]};
+    float gpsVel[3] = {0, 0, 0};
+    float imuDelta[3] = {0, 0, 0};
+    float imuQuat[4] = {0, 0, 0, 0}; // quaternion in i, j, k, real
+    float rotatedImuAccel[3] = {0, 0, 0};
+    float imuVel[3] = {0, 0, 0};
+    float translationalAccuracy = 0.0;
+    float rotationalAccuracy = 0.0;
     while (1) {
         // TODO: Possibly update IMU to use absolute positioning if need be?
         if (imu.getSensorEvent()) {
             switch (imu.getSensorEventID()) {
                 case SENSOR_REPORTID_LINEAR_ACCELERATION:
-                    imuAccel[0] = imu.getLinAccelX(); // m/s^2
-                    imuAccel[1] = imu.getLinAccelY();
-                    imuAccel[2] = imu.getLinAccelZ();
+                    float imuAccel[3] = {imu.getLinAccelX(), imu.getLinAccelY(), imu.getLinAccelZ()};
+                    translationalAccuracy = imu.getAccelAccuracy();
+
+                    // Quaternion stuff. Fun! (https://en.wikipedia.org/wiki/Quaternions_and_spatial_rotation#Quaternion_rotation_operations)
+                    float a = imuQuat[3];
+                    float b = -imuQuat[0];
+                    float c = -imuQuat[1];
+                    float d = -imuQuat[2];
+
+                    float s = 2 / (a * a + b * b + c * c + d * d);
+                    float bs = b * s;
+                    float cs = c * s;
+                    float ds = d * s;
+                    float ab = a * bs;
+                    float ac = a * cs;
+                    float ad = a * ds;
+                    float bb = b * bs;
+                    float bc = b * cs;
+                    float bd = b * ds;
+                    float cc = c * cs;
+                    float cd = c * ds;
+                    float dd = d * ds;
+
+                    rotatedImuAccel[0] = (1 - cc - dd) * imuAccel[0] + (bc - ad) * imuAccel[1] + (bd + ac) * imuAccel[2];
+                    rotatedImuAccel[1] = (bc + ad) * imuAccel[0] + (1 - bb - dd) * imuAccel[1] + (cd - ab) * imuAccel[2];
+                    rotatedImuAccel[2] = (bd - ac) * imuAccel[0] + (cd + ab) * imuAccel[1] + (1 - bb - cc) * imuAccel[2];
                     break;
                 case SENSOR_REPORTID_ROTATION_VECTOR:
-                    imuHeading[0] = imu.getRoll() * 180.0 / PI;
-                    imuHeading[1] = imu.getPitch() * 180.0 / PI;
-                    imuHeading[2] = imu.getYaw() * 180.0 / PI;
+                    imuQuat[0] = imu.getQuatI();
+                    imuQuat[1] = imu.getQuatJ();
+                    imuQuat[2] = imu.getQuatK();
+                    imuQuat[3] = imu.getQuatReal();
+                    rotationalAccuracy = imu.getQuatAccuracy();
                     break;
             }
-            // TODO: Dot each absolute axis with the lin accels
+
+            currTime = micros();
+            
+            double deltaTime = (currTime - prevTime) / 1000000.0;
+
+            imuVel[0] += rotatedImuAccel[0] * deltaTime;
+            imuVel[1] += rotatedImuAccel[1] * deltaTime;
+            imuVel[2] += rotatedImuAccel[2] * deltaTime;
+
+            imuDelta[0] = pos[0] + imuVel[0] * deltaTime;
+            imuDelta[1] = pos[0] + imuVel[1] * deltaTime;
+            imuDelta[2] = pos[0] + imuVel[2] * deltaTime;
+
+            prevTime = currTime;
         }
 
         // grab GPS stuff
@@ -254,28 +303,41 @@ void updateSensors() {
             gpsPos[1] = gps.location.lng();
             gpsPos[2] = gps.altitude.meters();
 
-            double avgLat = (gpsPos[0] + gpsZero[0]) / 2.0f;
-
-            // TODO: Possibly use integrated versions?
-            double mPerDegLat = 111132.92 - (559.82 * cos(2 * avgLat)) + (1.175 * cos(4 * avgLat)) - (0.0023 * cos(6 * avgLat));
-            double mPerDegLong = (111412.84 * cos(2 * avgLat)) - (93.5 * cos(3 * avgLat)) + (0.118 * cos(5*avgLat));
-
-            gpsDelta[0] = (gpsPos[0] - gpsZero[0]) * mPerDegLat;
-            gpsDelta[1] = (gpsPos[1] - gpsZero[1]) * mPerDegLat;
+            gpsDelta[0] = latToM(gpsZero[0], gpsPos[0]);
+            gpsDelta[1] = lngToM(gpsZero[1], gpsPos[1], gpsPos[0]);
             gpsDelta[2] = gpsPos[2] - gpsZero[2];
 
+            double gpsSpeed = gps.speed.mps();
+
             gpsHeading = gps.course.deg();
+
+            gpsVel[0] = sin(gpsHeading) * gpsSpeed;
+            gpsVel[1] = cos(gpsHeading) * gpsSpeed;
+            gpsVel[2] = 0; // idk probably not going to use these sensors for altitude anyway
         }
+
+        // Kalman time babyyyyyyy
+
+        
+
     }
 }
 
 // Helper functions
 
+float latToM(float latStart, float latEnd) {
+    float beg = 111132.92 - (559.82 * sin(2 * latEnd)) + (1.175 * sin(4 * latEnd)) - (0.0023 * sin(6 * latEnd));
+    float end = 111132.92 - (559.82 * sin(2 * latStart)) + (1.175 * sin(4 * latStart)) - (0.0023 * sin(6 * latStart));
+    return beg - end;
+}
+
+float lngToM(float lngStart, float lngEnd, float lat) {
+    return (lngEnd - lngStart) * (111412.84 * cos(2 * lat)) - (93.5 * cos(3 * lat)) + (0.118 * cos(5*lat));
+}
+
 void driverSelect(uint8_t i) {
     // Note: i = 0 corresponds to driver 1.
-    
     Wire.beginTransmission(0x70);
     Wire.write(1 << i);
     Wire.endTransmission();
-
 }
