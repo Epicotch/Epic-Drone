@@ -55,6 +55,27 @@ To write:
  * 
  */
 
+enum NavMode {
+    IDLE,
+    WAYPOINT_SERIES,
+    RETURN_HOME,
+    MANUAL,
+    // add more stuff if need be
+};
+
+enum FlightMode {
+    IDLE,
+    LANDED,
+    HOVER,
+    WAYPOINT,
+    RETURN_HOME,
+    VELOCITY,
+    // add more stuff if need be
+};
+
+enum NavMode navMode = NavMode::IDLE;
+enum FlightMode flightMode = FlightMode::IDLE;
+
 const int SD_CS = BUILTIN_SDCARD;
 
 int motor1PWM = 0;
@@ -97,6 +118,7 @@ TinyGPSPlus gps;
 
 void driverSelect(uint8_t);
 void getPos(float*, float*);
+void flightState(enum FlightMode);
 float latToM(float, float);
 float lngToM(float, float, float);
 
@@ -211,9 +233,48 @@ void setup() {
 void loop() {
     if (armed) {
         // stuff goes on in here
+        navigationStateMachine();
+        flightStateMachine();
     }
     else {
         // stuff to do while we're paused
+    }
+}
+
+void navigationStateMachine() {
+    switch (navMode) {
+        case IDLE:
+            // do nothing - use if the drone is intended to stay still (flight state machine IDLE, LANDED, or HOVER)
+            break;
+        case WAYPOINT_SERIES:
+            // fly a series of waypoints as read from the SD card, or defined via radio command
+            break;
+        case RETURN_HOME:
+            // basically a waypoint series but specifically for returning to home
+            break;
+        case MANUAL:
+            // control via radio controls - loss of radio control results in defaulting to RETURN_HOME
+            break;
+    }
+}
+
+void flightStateMachine() {
+    switch(flightMode) {
+        case IDLE:
+            // do nothing
+            break;
+        case LANDED:
+            // spun up, but on ground
+            break;
+        case HOVER:
+            // hovering in place via PID control
+            break;
+        case WAYPOINT:
+            // flying to waypoint via PID control
+            break;
+        case VELOCITY:
+            // fly at target velocity
+            break;
     }
 }
 
@@ -313,7 +374,7 @@ void updateSensors() {
 
             gpsVel[0] = sin(gpsHeading) * gpsSpeed;
             gpsVel[1] = cos(gpsHeading) * gpsSpeed;
-            gpsVel[2] = 0; // idk probably not going to use these sensors for altitude anyway
+            gpsVel[2] = imuVel[2]; // idk probably not going to use these sensors for altitude anyway
         }
 
         // Kalman time babyyyyyyy
