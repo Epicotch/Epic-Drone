@@ -116,9 +116,11 @@ volatile float heading[3];
 BNO08x imu;
 TinyGPSPlus gps;
 
+// Function initializations
+
 void driverSelect(uint8_t);
-void getPos(float*, float*);
 void flightState(enum FlightMode);
+void updateSensors();
 float latToM(float, float);
 float lngToM(float, float, float);
 
@@ -276,11 +278,6 @@ void flightStateMachine() {
             // fly at target velocity
             break;
     }
-}
-
-// Use extended Kalman filter to update our estimated position and heading.
-void updatePos(double* pos, double* heading) {
-
 }
 
 // Updates position sensors based on whatever's coming in
