@@ -1,0 +1,112 @@
+(footprint "ECS-.327-6-16-TR3"
+	(version 20241229)
+	(generator "pcbnew")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(property "Reference" "REF**"
+		(at 0 -1.5 0)
+		(unlocked yes)
+		(layer "F.SilkS")
+		(uuid "651fe510-d9ae-4ec7-88eb-9ebcf37b3364")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.1)
+			)
+		)
+	)
+	(property "Value" "ECS-.327-6-16-TR3"
+		(at 0 1.7 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(uuid "88e6d65f-a757-4bbf-8f06-13ddc93d946e")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "13ce49b5-3e33-431c-8314-0a971b8d5ac3")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "b490a2b3-e446-4013-b154-82cb2c2da053")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr smd)
+	(fp_rect
+		(start -1 -0.7)
+		(end 1 0.7)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.SilkS")
+		(uuid "4bd729e0-5295-47f4-8441-38558c31aec7")
+	)
+	(fp_rect
+		(start -1.1 -0.8)
+		(end 1.1 0.8)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.CrtYd")
+		(uuid "a9d9475c-0190-4add-b84b-b91d1b32c21b")
+	)
+	(fp_text user "${REFERENCE}"
+		(at 0 3.184 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(uuid "e9c5f85b-eb38-4833-ba00-3744f2ae9bef")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(pad "1" smd roundrect
+		(at -0.55 0)
+		(size 0.5 1)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(roundrect_rratio 0.15)
+		(thermal_bridge_angle 45)
+		(uuid "f6b41210-b7e5-41ba-9b8f-51695b353bbf")
+	)
+	(pad "2" smd roundrect
+		(at 0.55 0)
+		(size 0.5 1)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(roundrect_rratio 0.15)
+		(thermal_bridge_angle 45)
+		(uuid "cd0ada01-529f-4514-8e7a-e710656f26b3")
+	)
+	(group ""
+		(uuid "11edbe8e-1083-4a40-af96-b690b61252ef")
+		(members "cd0ada01-529f-4514-8e7a-e710656f26b3" "f6b41210-b7e5-41ba-9b8f-51695b353bbf")
+	)
+	(embedded_fonts no)
+)

@@ -1,0 +1,5 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "ADPL40502AUJZ-1.5-R7")(type "KiCad")(uri "${KIPRJMOD}/Imported parts/ADPL40502AUJZ-1.5-R7.kicad_sym")(options "")(descr ""))
+  (lib (name "Drone stuff")(type "KiCad")(uri "${KIPRJMOD}/Drone stuff.kicad_sym")(options "")(descr ""))
+)

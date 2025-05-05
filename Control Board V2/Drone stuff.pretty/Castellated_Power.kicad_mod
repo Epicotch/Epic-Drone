@@ -1,0 +1,138 @@
+(footprint "Castellated_Power"
+	(version 20241229)
+	(generator "pcbnew")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(property "Reference" "REF**"
+		(at -4.572 0 0)
+		(unlocked yes)
+		(layer "F.SilkS")
+		(uuid "127ed671-3053-465a-b691-04cad0df3e21")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.1)
+			)
+		)
+	)
+	(property "Value" "Castellated_Power"
+		(at 0 1 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(uuid "708b6a54-cf34-45c6-9533-5b7f779810f1")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "e0545d57-a2b6-4efd-a35e-4347e9019364")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "1b87dee6-b49d-43cd-99b9-65a04f6027ba")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr smd)
+	(fp_rect
+		(start -3.302 -3.81)
+		(end 3.302 3.81)
+		(stroke
+			(width 0.05)
+			(type default)
+		)
+		(fill no)
+		(layer "B.CrtYd")
+		(uuid "e9e2624a-b560-42d7-b1f0-a6d8246cd701")
+	)
+	(fp_rect
+		(start -3.302 -3.81)
+		(end 3.302 3.81)
+		(stroke
+			(width 0.05)
+			(type default)
+		)
+		(fill no)
+		(layer "F.CrtYd")
+		(uuid "5f898f2c-63bd-4102-b052-6dc820433a67")
+	)
+	(fp_text user "+"
+		(at -4.572 -1.4925 0)
+		(unlocked yes)
+		(layer "F.SilkS")
+		(uuid "548f2a2e-55db-4146-9695-b3713075535f")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.1)
+			)
+			(justify left bottom)
+		)
+	)
+	(fp_text user "-"
+		(at -4.572 2.54 0)
+		(unlocked yes)
+		(layer "F.SilkS")
+		(uuid "d0e1ca4b-9939-4bb9-830a-6e76cac28412")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.1)
+			)
+			(justify left bottom)
+		)
+	)
+	(fp_text user "${REFERENCE}"
+		(at 0 2.5 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(uuid "3bfb17e2-1bc7-476d-a1dd-7d0633a4b51d")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(pad "1" thru_hole oval
+		(at 0 -2.032)
+		(size 6 3)
+		(drill 2)
+		(property pad_prop_castellated)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(zone_connect 2)
+		(uuid "6c3ac0f1-507c-44d4-93f5-960ed1406dfd")
+	)
+	(pad "2" thru_hole oval
+		(at 0 2.032)
+		(size 6 3)
+		(drill 2)
+		(property pad_prop_castellated)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(zone_connect 2)
+		(uuid "6b419c0d-f117-4d20-81d4-f589397bf7b6")
+	)
+	(embedded_fonts no)
+)

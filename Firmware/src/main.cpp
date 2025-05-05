@@ -64,11 +64,10 @@ enum NavMode {
 };
 
 enum FlightMode {
-    IDLE,
+    FLIGHT_IDLE,
     LANDED,
     HOVER,
     WAYPOINT,
-    RETURN_HOME,
     VELOCITY,
     // add more stuff if need be
 };
@@ -117,12 +116,14 @@ BNO08x imu;
 TinyGPSPlus gps;
 
 // Function initializations
-
 void driverSelect(uint8_t);
 void flightState(enum FlightMode);
 void updateSensors();
 float latToM(float, float);
 float lngToM(float, float, float);
+
+void navigationStateMachine();
+void flightStateMachine();
 
 void setup() {
 
@@ -138,6 +139,11 @@ void setup() {
 
     Serial7.println("hello");
 
+    if (!SD.begin(SD_CS)) {
+        Serial.println("SD card attachment failed!");
+        while (1);
+    }
+
     pinMode(XBEE_RESET, OUTPUT);
     pinMode(RSSI, INPUT);
 
@@ -146,9 +152,9 @@ void setup() {
 
     delay(5000); // allow GPS module to get locks and calibrate itself a bit
 
-    while (Serial1.available() == 0) ;
-    while (Serial1.available() > 0) {
-        gps.encode(Serial1.read());
+    while (Serial1.available() == 0);
+    while (!gps.encode(Serial1.read())) {
+        while (Serial1.available() == 0);
     }
 
     // Get GPS zeroes
@@ -255,14 +261,14 @@ void navigationStateMachine() {
             // basically a waypoint series but specifically for returning to home
             break;
         case MANUAL:
-            // control via radio controls - loss of radio control results in defaulting to RETURN_HOME
+            // control via radio controls - loss of radio connection results in defaulting to RETURN_HOME
             break;
     }
 }
 
 void flightStateMachine() {
     switch(flightMode) {
-        case IDLE:
+        case FLIGHT_IDLE:
             // do nothing
             break;
         case LANDED:
@@ -290,8 +296,8 @@ void updateSensors() {
     float imuQuat[4] = {0, 0, 0, 0}; // quaternion in i, j, k, real
     float rotatedImuAccel[3] = {0, 0, 0};
     float imuVel[3] = {0, 0, 0};
-    float translationalAccuracy = 0.0;
-    float rotationalAccuracy = 0.0;
+    int translationalAccuracy = 0;
+    int rotationalAccuracy = 0;
     while (1) {
         // TODO: Possibly update IMU to use absolute positioning if need be?
         if (imu.getSensorEvent()) {
