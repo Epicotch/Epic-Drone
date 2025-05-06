@@ -3,12 +3,12 @@
 
 /**
  * TODO:
- * Add functions to read data
+ * Add functions to read data (done)
  * Self-test functions
- * Data ready functions
+ * Data ready function (done)
  * DMP functions? or want to do onboard filtering
- * ICM20948 struct
- * Config functions
+ * ICM20948 struct (done)
+ * Config functions (done)
  * Find out how to access the magnetometer
  */
 
@@ -137,16 +137,80 @@
 #define ICM_20948_MAG_TS2               0x34
 
 typedef struct {
-    int16_t x;
-    int16_t y;
-    int16_t z;
+    float x;
+    float y;
+    float z;
 } Vector3;
 
 typedef struct {
-    int32_t a;
-    int32_t b;
-    int32_t c;
-    int32_t d;
+    float a;
+    float b;
+    float c;
+    float d;
 } Quaternion; // in the form a + bi + cj + dk
+
+enum AccelFS {
+    ICM20948_ACCEL_FS_2G = 0,
+    ICM20948_ACCEL_FS_4G = 1,
+    ICM20948_ACCEL_FS_8G = 2,
+    ICM20948_ACCEL_FS_16G = 3
+};
+
+enum GyroFS {
+    ICM20948_GYRO_FS_250DPS = 0,
+    ICM20948_GYRO_FS_500DPS = 1,
+    ICM20948_GYRO_FS_1000DPS = 2,
+    ICM20948_GYRO_FS_2000DPS = 3
+};
+
+typedef struct {
+    float accelCoeff;
+    float gyroCoeff;
+
+    uint8_t reg_bank;
+
+    I2C_HandleTypeDef *i2c;
+    uint8_t writeAddr;
+    uint8_t readAddr;
+
+    Vector3 accel;
+    Vector3 gyro;
+    Vector3 magnetometer;
+} ICM20948;
+
+typedef struct {
+    enum AccelFS fullScale;
+
+    uint8_t dlpfcfg;
+    uint8_t dec3cfg;
+
+    bool fchoice;
+    bool x_self_test;
+    bool y_self_test;
+    bool z_self_test;
+} ICM20948_ACCEL_SETTINGS;
+
+typedef struct {
+    enum GyroFS fullScale;
+
+    uint8_t dlpfcfg;
+    uint8_t avgcfg;
+
+    bool fchoice;
+    bool x_self_test;
+    bool y_self_test;
+    bool z_self_test;
+} ICM20948_GYRO_SETTINGS;
+
+bool icm20948_init(ICM20948 *imu, I2C_HandleTypeDef *i2c, uint8_t addr);
+bool icm20948_data_ready(ICM20948 *imu);
+bool icm20948_data_ready(ICM20948 *imu);
+
+void icm20948_set_accel_settings(ICM20948 *imu, ICM20948_ACCEL_SETTINGS *settings);
+void icm20948_set_gyro_fs(ICM20948 *imu, ICM20948_GYRO_SETTINGS *settings);
+void icm20948_reset(ICM20948 *imu);
+
+HAL_I2C_StateTypeDef icm20948_write(ICM20948 *imu, uint8_t reg, uint8_t data);
+HAL_I2C_StateTypeDef icm20948_read(ICM20948 *imu, uint8_t reg, uint8_t *data, uint8_t length);
 
 #endif
